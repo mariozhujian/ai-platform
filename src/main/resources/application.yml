@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: ai-platform
+  ai:
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}   # 从环境变量中获取, sk-e0fe67f4c55a4e8c93e1ff6d3e73611a
+
+

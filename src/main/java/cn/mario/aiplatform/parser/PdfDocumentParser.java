@@ -1,0 +1,19 @@
+package cn.mario.aiplatform.parser;
+
+
+import org.springframework.ai.document.Document;
+import org.springframework.core.io.Resource;
+
+import java.util.List;
+
+/**
+ * @description: TODO
+ * @author: mario
+ * @date: 9/3/26
+ */
+public class PdfDocumentParser implements DocumentParser {
+    @Override
+    public List<Document> parse(Resource resource) {
+        return List.of();
+    }
+}
