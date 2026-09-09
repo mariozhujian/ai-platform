@@ -5,7 +5,7 @@ import org.springframework.core.io.Resource;
 /**
  * @auther: mario
  */
-public interface KnowledgeImportService {
+public interface PdfKnowledgeService {
 
     void importPdf(Resource resource);
 

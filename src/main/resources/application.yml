@@ -2,7 +2,30 @@ spring:
   application:
     name: ai-platform
   ai:
+    model:
+      chat: deepseek
+      embedding: openai
+
     deepseek:
       api-key: ${DEEPSEEK_API_KEY}   # 从环境变量中获取, sk-e0fe67f4c55a4e8c93e1ff6d3e73611a
+
+    openai:
+      embedding:
+        base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+        model: qwen3.7-text-embedding-flash
+        api-key: ${DASHSCOPE_API_KEY}
+        dimensions: 1536
+
+    vectorstore:
+      pgvector:
+        initialize-schema: true
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536
+        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
+  datasource:
+    url: jdbc:postgresql://101.35.29.66:5432/ai_platform?tcpKeepAlive=true
+    username: postgres
+    password: ${POSTGRES_PASSWORD:Zj931110}
 
 
