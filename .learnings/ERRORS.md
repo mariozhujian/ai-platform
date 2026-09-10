@@ -102,3 +102,19 @@ Do not rely on stale `target/` reports; regenerate them or inspect the current M
 - **Notes**: Used the live offline Maven dependency tree instead.
 
 ---
+
+## [ERR-20260910-PDF] Mockito dynamic attach
+
+**Logged**: 2026-09-10
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+Mockito inline MockMaker cannot attach in the restricted runtime.
+
+### Context
+`./mvnw -q test` failed during mock initialization.
+
+### Resolution
+Use mock-maker-subclass for tests that only mock interfaces and non-final classes.

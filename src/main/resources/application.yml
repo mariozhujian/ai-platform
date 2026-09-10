@@ -1,31 +1,41 @@
 spring:
+  sql:
+    init:
+      mode: always
   application:
     name: ai-platform
+  servlet:
+    multipart:  # spring 默认的单文件上传限制 1MB
+      max-file-size: 20MB
+      max-request-size: 20MB
   ai:
     model:
       chat: deepseek
       embedding: openai
+      audio:
+        speech: none
+        transcription: none
+      image: none
+      moderation: none
 
     deepseek:
-      api-key: ${DEEPSEEK_API_KEY}   # 从环境变量中获取, sk-e0fe67f4c55a4e8c93e1ff6d3e73611a
+      api-key: ${DEEPSEEK_API_KEY}
 
     openai:
       embedding:
         base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
         model: qwen3.7-text-embedding-flash
         api-key: ${DASHSCOPE_API_KEY}
-        dimensions: 1536
+        dimensions: 1024
 
     vectorstore:
       pgvector:
-        initialize-schema: true
-        index-type: HNSW
-        distance-type: COSINE_DISTANCE
-        dimensions: 1536
-        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
+        initialize-schema: true # 自动初始化数据库表结构
+        index-type: HNSW  # 向量索引类型，层次可导航小世界图
+        distance-type: COSINE_DISTANCE # 距离度量方式：余弦距离
+        dimensions: 1024 # 向量嵌入的维度是 1024 维
+        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch ， 单次批量写入数据库的最大文档数量
   datasource:
     url: jdbc:postgresql://101.35.29.66:5432/ai_platform?tcpKeepAlive=true
     username: postgres
     password: ${POSTGRES_PASSWORD:Zj931110}
-
-

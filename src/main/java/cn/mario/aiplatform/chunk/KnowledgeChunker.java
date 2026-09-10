@@ -4,9 +4,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -172,30 +170,49 @@ public class KnowledgeChunker {
                             globalChunkIndex, contentWithTitle);
                     List<Document> tokenChunks = tokenTextSplitter.apply(List.of(tempDocument));
 
-
+                    /**
+                     * 给 Token Split 后的 chunk重新设置 chunkIndex。
+                     */
+                    for (int i = 0; i < tokenChunks.size(); i++) {
+                        Document tokenChunk = tokenChunks.get(i);
+                        HashMap<String, Object> metadata = new HashMap<>(tokenChunk.getMetadata());
+                        metadata.put("chunkIndex", globalChunkIndex++);
+                        metadata.put("subChunkIndex", i);
+                        metadata.put("splitType", "token");
+                        result.add(new Document(tokenChunk.getText(), metadata));
+                    }
                 }
             }
-
-
-
-
-
         }
-
-
-        // 段落切分
-
-        // TokenTextSplitter
-
-        // metadata 补充
-
-        return documents;
+        return result;
     }
 
-    private Document createChunkDocument(Document document, Section section, int sectionIndex,
-                                         int globalChunkIndex, String contentWithTitle) {
+    private Document createChunkDocument(Document source, Section section, int sectionIndex,
+                                         int chunkIndex, String content) {
 
-        return null;
+        /*
+         * 继承原始 PDF Document metadata。
+         *
+         * 比如：
+         *
+         * page_number
+         * file_name
+         * source
+         */
+        Map<String, Object> metadata = new HashMap<>(source.getMetadata());
+
+        /*
+         * 增加自己的 metadata
+         */
+        metadata.put("section", section.title() == null
+                        ? ""
+                        : section.title()
+        );
+
+        metadata.put("sectionIndex", sectionIndex);
+        metadata.put("chunkIndex", chunkIndex);
+        metadata.put("splitType", "structure");
+        return new Document(content, metadata);
     }
 
     /**
@@ -242,7 +259,6 @@ public class KnowledgeChunker {
          */
         if (!content.isEmpty()) {
             sections.add(new Section(currentTitle, cleanContent(content.toString())));
-
         }
 
         /**
