@@ -72,6 +72,12 @@ public class PdfKnowledgeServiceImpl implements PdfKnowledgeService {
         vectorStore.add(chunks);
     }
 
+    /**
+     * 读取文件内容并计算 SHA-256 哈希，用于识别重复上传的 PDF。
+     *
+     * @param resource PDF 文件资源
+     * @return 文件内容的 SHA-256 十六进制字符串
+     */
     private String fileHash(Resource resource) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

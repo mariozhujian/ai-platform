@@ -2,6 +2,7 @@ package cn.mario.aiplatform.controller;
 
 
 import cn.mario.aiplatform.exception.BizException;
+import cn.mario.aiplatform.service.KnowledgeService;
 import cn.mario.aiplatform.service.PdfKnowledgeService;
 import cn.mario.aiplatform.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,20 @@ public class KnowledgeController {
 
     @Autowired
     private PdfKnowledgeService pdfKnowledgeService;
+    @Autowired
+    private KnowledgeService knowledgeService;
+
+    @PostMapping("/file")
+    public Result<String> importDocument(@RequestParam(value = "file") MultipartFile file) {
+        // 校验文件
+        if (file == null || file.isEmpty()) {
+            throw new BizException("文件不能为空");
+        }
+
+        knowledgeService.importDocument(file.getResource());
+        return Result.success("文件导入成功");
+    }
+
 
     @PostMapping("/pdf")
     public Result<String> upload(@RequestParam(value = "file") MultipartFile file) {
@@ -48,5 +63,7 @@ public class KnowledgeController {
     public Flux<String> stream(@RequestParam(value = "message") String message) {
         return pdfKnowledgeService.stream(message);
     }
+
+
 
 }

@@ -39,3 +39,19 @@ spring:
     url: jdbc:postgresql://101.35.29.66:5432/ai_platform?tcpKeepAlive=true
     username: postgres
     password: ${POSTGRES_PASSWORD:Zj931110}
+
+knowledge:
+  ocr:
+    command: tesseract
+    language: chi_sim+eng
+    timeout-seconds: 60
+    max-pages: 30
+    dpi: 180
+    # auto: 文字较少或者有替换字符时 OCR
+    # always：每页 OCR，适用文字层残缺的文件
+    mode: auto
+
+    # 使用 qwen3.5-ocr 模型解析
+    base-url: "https://llm-qpo0iraw2q488rhd.cn-beijing.maas.aliyuncs.com/compatible-mode/v1"
+    api-key: ${DASHSCOPE_API_KEY}
+    model: qwen3.5-ocr
