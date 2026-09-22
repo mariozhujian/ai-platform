@@ -2,6 +2,7 @@ package cn.mario.aiplatform.service.impl;
 
 import cn.mario.aiplatform.chunk.KnowledgeChunker;
 import cn.mario.aiplatform.exception.BizException;
+import cn.mario.aiplatform.mapper.KnowledgeImportMapper;
 import cn.mario.aiplatform.parser.PdfDocumentParser;
 import cn.mario.aiplatform.service.PdfKnowledgeService;
 import org.springframework.ai.chat.client.ChatClient;
@@ -10,20 +11,18 @@ import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 
-import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
+import java.util.List;
 
 /**
  * @auther: mario
@@ -44,17 +43,14 @@ public class PdfKnowledgeServiceImpl implements PdfKnowledgeService {
     @Autowired
     private VectorStore vectorStore;
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private KnowledgeImportMapper knowledgeImportMapper;
 
     @Override
     @Transactional
     public void importPdf(Resource resource) {
         String hash = fileHash(resource);
         // 唯一键负责并发去重；与向量写入共用事务，失败后可重新上传。
-        int inserted = jdbcTemplate.update("""
-                INSERT INTO knowledge_pdf_import (file_hash, filename)
-                VALUES (?, ?) ON CONFLICT (file_hash) DO NOTHING
-                """, hash, resource.getFilename());
+        int inserted = knowledgeImportMapper.insertIfAbsent(hash, resource.getFilename());
         if (inserted == 0) {
             throw new BizException(409, "该 PDF 文件已上传，请勿重复上传");
         }

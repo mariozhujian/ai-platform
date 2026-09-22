@@ -1,7 +1,7 @@
 spring:
   sql:
     init:
-      mode: always
+      mode: never
   application:
     name: ai-platform
   servlet:
@@ -30,7 +30,7 @@ spring:
 
     vectorstore:
       pgvector:
-        initialize-schema: true # 自动初始化数据库表结构
+        initialize-schema: false # 自动初始化数据库表结构
         index-type: HNSW  # 向量索引类型，层次可导航小世界图
         distance-type: COSINE_DISTANCE # 距离度量方式：余弦距离
         dimensions: 1024 # 向量嵌入的维度是 1024 维
@@ -39,6 +39,14 @@ spring:
     url: jdbc:postgresql://101.35.29.66:5432/ai_platform?tcpKeepAlive=true
     username: postgres
     password: ${POSTGRES_PASSWORD:Zj931110}
+
+  # Flyway 是数据库版本管理工具：把每次建表、加字段、建索引写成 SQL 文件，和代码一起提交，部署时按顺序执行。
+  flyway:
+    enabled: true
+    locations: classpath:db/migration #指定迁移 SQL 所在目录
+    baseline-on-migrate: false #不自动接管未知的已有数据库
+    validate-on-migrate: true  #执行前校验已应用的迁移文件
+    clean-disabled: true       #禁用 Flyway 的清空操作
 
 knowledge:
   ocr:
