@@ -63,8 +63,19 @@ ALTER TABLE knowledge_import
 
 COMMENT ON COLUMN knowledge_import.knowledge_base_id IS '导入文件所属知识库编号，关联知识库';
 
-ALTER TABLE knowledge_import
-DROP CONSTRAINT knowledge_import_pkey;
+DO $$
+DECLARE
+    primary_key_name TEXT;
+BEGIN
+    SELECT conname INTO primary_key_name
+    FROM pg_constraint
+    WHERE conrelid = 'knowledge_import'::regclass
+      AND contype = 'p';
+
+    IF primary_key_name IS NOT NULL THEN
+        EXECUTE format('ALTER TABLE knowledge_import DROP CONSTRAINT %I', primary_key_name);
+    END IF;
+END $$;
 
 ALTER TABLE knowledge_import
     ADD PRIMARY KEY (knowledge_base_id, file_hash);
